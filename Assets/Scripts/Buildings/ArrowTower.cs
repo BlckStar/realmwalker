@@ -1,19 +1,77 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using TMPro;
+using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ArrowTower : MonoBehaviour
 {
-    public int Level = 1;
+    private int range = 5;
+    private int _level = 1;
+    private float speed = 1;
+    private float NextAttack = 0;
+
+    public PlayerManager playerManager;
+
+    public int Level
+    {
+        get { return _level; }
+        set
+        {
+            _level = value;
+            this.text.text = "LVL " + _level;
+        }
+    }
+
+    [CanBeNull] public Minion lockedMinion;
+
+    public void Update()
+    {
+        if (lockedMinion == null)
+        {
+            Collider[] colliders = Physics
+                .OverlapSphere(transform.position, range, LayerMask.GetMask("Minion"))
+                .Where(collider => collider.tag != this.tag).ToArray();
+
+            if (colliders.Length > 0)
+            {
+               lockedMinion = colliders.First().GetComponent<Minion>();
+            }
+
+            return;
+        }
+
+        // find distance between minion and tower
+        float distance = Vector3.Distance(this.transform.position, lockedMinion.transform.position);
+        // if distance is less than range
+        if (distance > this.range)
+        {
+            lockedMinion = null;
+        }
+        else
+        {
+            if (NextAttack < Time.time)
+            {
+                NextAttack = Time.time + speed;
+                lockedMinion.Hit((int)(10f * Math.Pow(2f, this.Level)));
+            }
+        }
+    }
+
+    public void OnDrawGizmosSelected()
+    {
+        // Draw a yellow sphere at the transform's position
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, this.range);
+    }
+
     public TextMeshProUGUI text;
+
     public int UpgradeCost
     {
-        get
-        {
-            return this.Level * 20;
-        }
+        get { return (int)(10 * math.pow(2, this._level)); }
     }
 
     public void Start()
@@ -23,12 +81,11 @@ public class ArrowTower : MonoBehaviour
 
     public void Upgrade()
     {
-        if (IncomeManager.Instance.Souls > this.UpgradeCost)
+        if (playerManager.Money >= this.UpgradeCost)
         {
+            this.range += 1;
+            playerManager.Money -= this.UpgradeCost;
             this.Level++;
-            IncomeManager.Instance.Souls -= this.UpgradeCost;
         }
-        
-        this.text.text = "LVL " + Level;
     }
 }

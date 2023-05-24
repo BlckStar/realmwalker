@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -12,32 +13,30 @@ public class TowerPlot : Building
     public int cost = 20;
     public TextMeshProUGUI text;
     public ArrowTower tower;
-    
-    
     public override void Interact()
     {
         if (!isBuilt)
         {
-            if (IncomeManager.Instance.Souls > cost)
+            if (PlayerManager.Money > cost)
             {
                 this.Build();
             }
             return;
         }
 
-        if (IncomeManager.Instance.Souls > this.tower.UpgradeCost)
-        {
-            this.tower.Upgrade();
-            TriggerEnter();
-        }
+        
+        this.tower.Upgrade();
+        TriggerEnter();
     }
 
     private void Build()
     {
-        IncomeManager.Instance.Souls -= cost;
+        PlayerManager.Money -= cost;
         GameObject newTower = Instantiate(this.ArrowTowerPrototype, this.transform, false);
         newTower.transform.position = this.spawnPos.position;
         this.tower = newTower.GetComponent<ArrowTower>();
+        this.tower.playerManager = PlayerManager;
+        this.tower.tag = this.tag;
         this.isBuilt = true;
         TriggerEnter();
     }

@@ -29,8 +29,8 @@
                     "id": "888e97b7-edf4-4768-80b5-a196827d5904",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "interactions": "Tap",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "pause",
@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "menunav",
+                    "type": "Button",
+                    "id": "40ff78d0-34e5-4afc-a9ac-19b057d19cfd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -141,6 +150,39 @@
                     "action": "pause",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "920351f1-8e16-4946-84bf-812458190dc0",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "menunav",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "a0e0a6bf-cffb-43d5-aaa6-43ac2253c7ce",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "menunav",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "5a26be59-1edd-469a-9225-a7b47b4e262f",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "menunav",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

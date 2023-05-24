@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 
     private float _direction = 0;
 
-    public float MovementSpeed = 2;
+    public float MovementSpeed = 4;
     public float Direction
     {
         get
