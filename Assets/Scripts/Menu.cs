@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,16 +18,35 @@ public class Menu : MonoBehaviour
 
     public void Interact()
     {
-        this.items[active].Interact();
+        if (this.items[active].Interact())
+        {
+            QueueItem item = this.queue.First(item => !item.occupied);
+            item.Set(this.items[active].Level);
+        }
     }
 
     private void Start()
     {
+        playerManager.OnMinionSpawned.AddListener(this.regenerateQueue);
         playerManager.OnMoneyChanged.AddListener((money) => { this.items.ForEach((item) => item.RefreshGUI()); });
         OnOpen();
         this.items[0].Active = true;
         this.items[0].RefreshGUI();
 
+    }
+
+    private void regenerateQueue()
+    {
+
+        int i = 0;
+        QueueItem item = this.queue.ElementAt(0);
+        do
+        {
+            i++;
+            item.CopyFrom(this.queue.ElementAt(i));
+            item = this.queue.ElementAt(i);
+
+        } while (item.occupied);
     }
 
     public void OnOpen()
@@ -60,7 +80,7 @@ public class Menu : MonoBehaviour
         this.items[active].Active = false;
         active -= (int)axis;
         this.items[active].Active = true;
-        this.items.ForEach((item => item.RefreshGUI()));
+        this.items.ForEach(item => item.RefreshGUI());
         scroll.verticalNormalizedPosition = 1f - (active * 0.2f);
     }
 }

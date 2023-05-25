@@ -10,8 +10,9 @@ public class ArrowTower : MonoBehaviour
 {
     private int range = 5;
     private int _level = 1;
-    private float speed = 1;
+    private float speed = 0.5f;
     private float NextAttack = 0;
+    public GameObject ArrowPrefab;
 
     public PlayerManager playerManager;
 
@@ -86,6 +87,7 @@ public class ArrowTower : MonoBehaviour
             this.range += 1;
             playerManager.Money -= this.UpgradeCost;
             this.Level++;
+            this.speed *= 0.9f;
         }
     }
 }

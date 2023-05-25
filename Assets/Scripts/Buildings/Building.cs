@@ -10,6 +10,11 @@ abstract public class Building : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (this.PlayerManager.isAI)
+        {
+            return;
+        }
+
         if (other.tag != this.tag)
         {
             return;

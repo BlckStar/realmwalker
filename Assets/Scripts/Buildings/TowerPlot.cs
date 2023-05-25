@@ -9,21 +9,32 @@ public class TowerPlot : Building
 {
     public Transform spawnPos;
     public GameObject ArrowTowerPrototype;
-    private bool isBuilt = false;
+    public bool isBuilt = false;
     public int cost = 20;
     public TextMeshProUGUI text;
     public ArrowTower tower;
+    public int Cost {
+        get
+        {
+            if (!isBuilt)
+            {
+                return cost;
+            }
+
+            return this.tower.UpgradeCost;
+        }
+    }
+
     public override void Interact()
     {
         if (!isBuilt)
         {
-            if (PlayerManager.Money > cost)
+            if (PlayerManager.Money >= cost)
             {
                 this.Build();
             }
             return;
         }
-
         
         this.tower.Upgrade();
         TriggerEnter();

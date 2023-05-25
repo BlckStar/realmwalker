@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
     public int Level = 1;
 
+    public UnityEvent OnMinionSpawned;
     private void Awake()
     {
         Money = 100;
@@ -79,6 +81,23 @@ public class PlayerManager : MonoBehaviour
         {
             Money += Income;
             NextIncome = IncomeEvery;
+        }
+
+        if (queueSize > 0 && SpawnRequestedTime + 1f < Time.time)
+        {
+            Debug.Log(queueSize);
+            int MinionLevel = MinionQueue.Dequeue();
+            Minion minion = Instantiate(prototype, spawnPoint.transform);
+            minion.transform.localRotation =
+                Quaternion.Euler(0, 180, this.tag == "Player1" ? 180 : 0);
+            minion.Level = MinionLevel;
+            minion.Destination = destination.position;
+            minion.tag = this.tag;
+            minion.OnSpawn();
+            OnMinionSpawned.Invoke();
+
+            queueSize--;
+            SpawnRequestedTime = Time.time;
         }
 
         if (!isAI)
@@ -172,22 +191,29 @@ public class PlayerManager : MonoBehaviour
     public Transform spawnPoint;
     public Transform destination;
 
-    public void SpawnMinion(int Level)
+    private Queue<int> MinionQueue = new Queue<int>();
+    private int queueSize = 0;
+
+    public bool SpawnMinionQueued(int Level)
     {
         int Cost = (int)(10f * Math.Pow(2f, Level));
-        if (this.Money >= Cost)
+        if (this.Money < Cost || queueSize >= 10)
         {
-            this.Money -= Cost;
-            this.Income += Cost / 5;
+            return false;
         }
 
-        Minion minion = Instantiate(prototype, spawnPoint.transform);
-        minion.transform.localRotation =
-            Quaternion.Euler(0, 180, this.tag == "Player1" ? 180 : 0);
-        minion.Level = Level;
-        minion.Destination = destination.position;
-        minion.tag = this.tag;
-        minion.OnSpawn();
+        this.Money -= Cost;
+        this.Income += Cost / 5;
+
+        MinionQueue.Enqueue(Level);
+        if (queueSize == 0)
+        {
+            SpawnRequestedTime = Time.time;
+        }
+        queueSize++;
+
+        return true;
     }
 
+    public float SpawnRequestedTime;
 }
