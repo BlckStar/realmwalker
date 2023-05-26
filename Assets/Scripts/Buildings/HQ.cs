@@ -48,7 +48,7 @@ public class HQ : Building
     public override void TriggerEnter()
     {
         int cost = (int)(200 * math.pow(2, PlayerManager.Level));
-        this.upgradeText.text = "E to Upgrade (" + cost + " Gold) + " + (int)(cost / 10) + " Income";
+        this.upgradeText.text = "E to Upgrade\n (" + cost + " Gold)\n + " + (int)(cost / 10) + " Income";
     }
 
 

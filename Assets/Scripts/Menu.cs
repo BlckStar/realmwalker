@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
+[RequireComponent(typeof(AudioSource))]
 public class Menu : MonoBehaviour
 {
     public List<QueueItem> queue;
@@ -15,11 +15,14 @@ public class Menu : MonoBehaviour
     public ScrollRect scroll;
     private int active = 0;
     public PlayerManager playerManager;
+    private AudioSource audioSource;
+    public AudioSource spawnSound;
 
     public void Interact()
     {
         if (this.items[active].Interact())
         {
+            this.audioSource.Play();
             QueueItem item = this.queue.First(item => !item.occupied);
             item.Set(this.items[active].Level);
         }
@@ -32,12 +35,13 @@ public class Menu : MonoBehaviour
         OnOpen();
         this.items[0].Active = true;
         this.items[0].RefreshGUI();
-
+        this.audioSource = this.GetComponent<AudioSource>();
     }
 
     private void regenerateQueue()
     {
 
+        this.spawnSound.Play();
         int i = 0;
         QueueItem item = this.queue.ElementAt(0);
         do

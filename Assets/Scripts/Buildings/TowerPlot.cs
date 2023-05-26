@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class TowerPlot : Building
 {
     public Transform spawnPos;
@@ -13,7 +14,10 @@ public class TowerPlot : Building
     public int cost = 20;
     public TextMeshProUGUI text;
     public ArrowTower tower;
-    public int Cost {
+    private AudioSource audioSource;
+
+    public int Cost
+    {
         get
         {
             if (!isBuilt)
@@ -33,11 +37,18 @@ public class TowerPlot : Building
             {
                 this.Build();
             }
+
             return;
         }
-        
+
         this.tower.Upgrade();
         TriggerEnter();
+    }
+
+    private new void Start()
+    {
+        this.audioSource = this.GetComponent<AudioSource>();
+        base.Start();
     }
 
     private void Build()
@@ -49,6 +60,11 @@ public class TowerPlot : Building
         this.tower.playerManager = PlayerManager;
         this.tower.tag = this.tag;
         this.isBuilt = true;
+        if (!this.PlayerManager.isAI)
+        {
+            this.audioSource.Play();
+        }
+
         TriggerEnter();
     }
     

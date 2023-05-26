@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using JetBrains.Annotations;
 using TMPro;
 using System.Linq;
-using Blobcreate.ProjectileToolkit;
 using Unity.Mathematics;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class ArrowTower : MonoBehaviour
 {
     private int range = 5;
@@ -14,6 +13,9 @@ public class ArrowTower : MonoBehaviour
     private float speed = 0.5f;
     private float NextAttack = 0;
     public Arrow ArrowPrefab;
+    private AudioSource _audioSource;
+    public AudioClip buildSound;
+    public AudioClip attackSound; 
 
     public PlayerManager playerManager;
 
@@ -56,6 +58,11 @@ public class ArrowTower : MonoBehaviour
         {
             if (NextAttack < Time.time)
             {
+                if (!this.playerManager.isAI)
+                {    
+                    this._audioSource.PlayOneShot(this.attackSound);
+                }
+
                 NextAttack = Time.time + speed;
                 Arrow myRigid = Instantiate(ArrowPrefab, this.transform.position, this.transform.rotation);
                 myRigid.Fire(lockedMinion, (int)(10f * Math.Pow(2f, this.Level)));
@@ -79,6 +86,7 @@ public class ArrowTower : MonoBehaviour
 
     public void Start()
     {
+        this._audioSource = this.GetComponent<AudioSource>();
         this.text.text = "LVL " + Level;
     }
 
@@ -90,6 +98,7 @@ public class ArrowTower : MonoBehaviour
             playerManager.Money -= this.UpgradeCost;
             this.Level++;
             this.speed *= 0.9f;
+            this._audioSource.PlayOneShot(this.buildSound);
         }
     }
 }

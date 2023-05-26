@@ -210,6 +210,7 @@ MonoBehaviour:
   MovementSpeed: 2
   reached: 0
   EnemyHQ: {fileID: 0}
+  isDead: 0
   healthBar: {fileID: 3199169383125865201}
   lvlText: {fileID: 3210372912082077394}
 --- !u!65 &3521718738648751736
@@ -1285,8 +1286,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: LVL1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 856f59746fcef469399f01bfbef708d2, type: 2}
+  m_sharedMaterial: {fileID: 5995046496963216668, guid: 856f59746fcef469399f01bfbef708d2,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
