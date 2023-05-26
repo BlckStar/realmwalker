@@ -3,6 +3,7 @@ using System.Collections;
 using JetBrains.Annotations;
 using TMPro;
 using System.Linq;
+using Blobcreate.ProjectileToolkit;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class ArrowTower : MonoBehaviour
     private int _level = 1;
     private float speed = 0.5f;
     private float NextAttack = 0;
-    public GameObject ArrowPrefab;
+    public Arrow ArrowPrefab;
 
     public PlayerManager playerManager;
 
@@ -34,11 +35,11 @@ public class ArrowTower : MonoBehaviour
         {
             Collider[] colliders = Physics
                 .OverlapSphere(transform.position, range, LayerMask.GetMask("Minion"))
-                .Where(collider => collider.tag != this.tag).ToArray();
+                .Where(collider => collider.tag != this.tag && !collider.GetComponent<Minion>().isDead).ToArray();
 
             if (colliders.Length > 0)
             {
-               lockedMinion = colliders.First().GetComponent<Minion>();
+                lockedMinion = colliders.First().GetComponent<Minion>();
             }
 
             return;
@@ -56,7 +57,8 @@ public class ArrowTower : MonoBehaviour
             if (NextAttack < Time.time)
             {
                 NextAttack = Time.time + speed;
-                lockedMinion.Hit((int)(10f * Math.Pow(2f, this.Level)));
+                Arrow myRigid = Instantiate(ArrowPrefab, this.transform.position, this.transform.rotation);
+                myRigid.Fire(lockedMinion, (int)(10f * Math.Pow(2f, this.Level)));
             }
         }
     }

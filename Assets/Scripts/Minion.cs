@@ -18,7 +18,7 @@ public class Minion : MonoBehaviour
     public HQ EnemyHQ;
 
     private Animator Animator;
-    private bool isDead;
+    public bool isDead;
     private int health = 100;
     public Slider healthBar;
 
@@ -73,6 +73,11 @@ public class Minion : MonoBehaviour
 
     public void Hit(int dmg)
     {
+        if (this.isDead)
+        {
+            return;
+        }
+
         this.health -= dmg;
         this.healthBar.value = this.health;
         if (this.health <= 0)

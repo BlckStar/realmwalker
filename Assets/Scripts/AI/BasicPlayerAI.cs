@@ -11,7 +11,6 @@ using Random = Unity.Mathematics.Random;
 [RequireComponent(typeof(PlayerManager))]
 public class BasicPlayerAI : MonoBehaviour
 {
-    public Vector3 offsetPosition;
     private Queue<Task> _tasks = new Queue<Task>();
     private PlayerManager _playerManager;
     private Player player;
@@ -20,6 +19,9 @@ public class BasicPlayerAI : MonoBehaviour
     private Vector3 destination;
     private TowerPlot currentPlot;
     private HQ currentHQ;
+
+    private bool WorkInProgress = false;
+    private Flop Flop = new Flop();
 
     // Start is called before the first frame update
     void Start()
@@ -35,8 +37,6 @@ public class BasicPlayerAI : MonoBehaviour
             int action = random.NextInt(1, 3);
             this._tasks.Enqueue((Task)action);
         }
-
-        WorkQueue();
     }
 
     private void WorkQueue()
@@ -66,12 +66,11 @@ public class BasicPlayerAI : MonoBehaviour
                 this.TryHQUpgdrade();
                 break;
             case Task.Build:
-                if (this.noPlotsLeft)
+                if (!this.noPlotsLeft)
                 {
-                    WorkQueue();
-                    return;
+                    this.FindPlot();
+
                 }
-                this.FindPlot();
                 break;
             case Task.Upgrade:
                 this.FindPlot();
@@ -86,6 +85,7 @@ public class BasicPlayerAI : MonoBehaviour
     {
         if (currentHQ.Cost <= _playerManager.Money)
         {
+            this.WorkInProgress = true;
             player._direction = 1;
         }
     }
@@ -118,10 +118,10 @@ public class BasicPlayerAI : MonoBehaviour
         this.currentPlot = towerPlots[0];
         if (currentPlot.Cost > _playerManager.Money)
         {
-            WorkQueue();
             return;
         }
 
+        this.WorkInProgress = true;
         if (currentPlot.transform.position.x < player.transform.position.x)
         {
             player.Direction = -1;
@@ -135,25 +135,29 @@ public class BasicPlayerAI : MonoBehaviour
 
     private void Update()
     {
+        this.Flop.Every(5, () =>
+        {
+            if (!this.WorkInProgress)
+            {
+                WorkQueue();
+            }
+        });
+        
         if (currentTask == Task.HQ && player.transform.position.x - currentHQ.transform.position.x < 0.1f)
         {
+            this.WorkInProgress = false;
             currentHQ.Interact();
-            WorkQueue();
             return;
         }
         
         if (currentPlot != null)
         {
-            // Find distance of x coordinates
-            if (player.transform)
-            
-                
             if (math.abs(player.transform.position.x - currentPlot.transform.position.x) < 0.1f)
             { 
+                this.WorkInProgress = false;
                 currentPlot.Interact();
                 currentPlot = null;
                 player.Direction = 0;
-                WorkQueue();
             }
         }
 
@@ -170,7 +174,5 @@ public class BasicPlayerAI : MonoBehaviour
             done = this._playerManager.SpawnMinionQueued(level);
             level--;
         } while (!done && level > 0);
-
-        WorkQueue();
     }
 }

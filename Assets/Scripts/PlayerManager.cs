@@ -197,7 +197,7 @@ public class PlayerManager : MonoBehaviour
     public bool SpawnMinionQueued(int Level)
     {
         int Cost = (int)(10f * Math.Pow(2f, Level));
-        if (this.Money < Cost || queueSize >= 10)
+        if (this.Money < Cost || queueSize >= 9)
         {
             return false;
         }
